@@ -1,0 +1,25 @@
+name: Notify deps2.dev
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "version.txt"
+
+jobs:
+  notify-deps2dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        run: echo "::set-output name=VERSION::$(cat version.txt)"
+
+      - name: Notify deps2.dev
+        run: |
+          curl -X POST https://deps2-dev.onrender.com/newVersion \
+          -H "Content-Type: application/json" \
+          -d '{"packageName": "VeriTax", "version": "${{ steps.version.outputs.VERSION }}"}'
